@@ -89,7 +89,7 @@ saveTasks();
 var taskP = $("<p>")
   .addClass("m-1")
   .text(text);
-
+debugger;
 // replace textarea with p element
 $(this).replaceWith(taskP);
 });
@@ -144,7 +144,7 @@ $(".list-group").on("blur", "input[type='text']", function() {
   var taskSpan = $("<span>")
     .addClass("badge badge-primary badge-pill")
     .text(date);
-
+debugger;
   // replace input with span element
   $(this).replaceWith(taskSpan);
 });
