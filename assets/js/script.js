@@ -13,6 +13,8 @@ var createTask = function (taskText, taskDate, taskList) {
   // append span and p element to parent li
   taskLi.append(taskSpan, taskP);
 
+  //check due date
+  auditTask(taskLi)
 
   // append to ul list on the page
   $("#list-" + taskList).append(taskLi);
@@ -119,7 +121,7 @@ $(".list-group").on("click", "span", function () {
     minDate: 1,
     onClose: function () {
       // when calendar is closed, force a "change" event on the `dateInput`
-      $(this.trigger("change"))
+      $(this).trigger("change")
     }
   })
 
@@ -153,9 +155,12 @@ $(".list-group").on("change", "input[type='text']", function () {
   var taskSpan = $("<span>")
     .addClass("badge badge-primary badge-pill")
     .text(date);
-  // debugger;
+  
   // replace input with span element
   $(this).replaceWith(taskSpan);
+
+  //pass task's <li> element into auditTask() to check new due date 
+  auditTask($(taskSpan).closest(".list-group-item"))
 });
 
 //using jquery ui connect lists, make sortable (able to drag and drop to diff lists). sortable() is only in jqueryui
@@ -250,6 +255,31 @@ $("#modalDueDate").datepicker({
   minDate: 1
 });
 
+//changes the task color depending on due date
+var auditTask = function (taskEl) {
+  //get date from task element
+  var date = $(taskEl).find("span").text().trim();
+  //ensure it worked
+  console.log(date)
+
+  //convert to moment object at 5:00pm
+  var time = moment(date, "L").set("hour", 17)
+
+  //remove any old classes from element
+  $(taskEl).removeClass("list-group-item-warning list-group-item-danger")
+
+  //apply new class if task is near/over due date
+  if (moment().isAfter(time)) {
+    $(taskEl).addClass("list-group-item-danger")
+  } else if (Math.abs(moment().diff(time, "days"))<= 2) {
+    $(taskEl).addClass("list-group-item-warning")  
+  }
+
+  // this should print out an object for the value of the date variable, but at 5:00pm of that date
+  console.log(time);
+  
+}
+
 //dropzone trash for single items (droppable is jquery ui function only)
 $("#trash").droppable({
   accept: ".card .list-group-item",
@@ -279,3 +309,15 @@ $("#remove-tasks").on("click", function () {
 loadTasks();
 
 
+
+
+//how to use moment.js examples
+
+// //var rightNow = moment().format("MMMM Do, YYYY - hh:mm:ss a");
+// console.log(rightNow);
+
+// var tomorrow = moment().add(1, "day").format("dddd, MM-D-YYYY [at] hh:mm:ss A");
+// console.log(tomorrow);
+
+// var pastDate = moment("12-01-1999", "MM-DD-YYYY").format("dddd, MM/DD/YY");
+// console.log(pastDate);
